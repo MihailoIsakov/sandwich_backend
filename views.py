@@ -54,4 +54,11 @@ def upsert_comment():
         upsert = True
     )
 
-    return ('', 204)
+    bot_count = reactions.find(
+        {'comment_id': comment_id, 'bot': 'true'}).count()
+
+    not_count = reactions.find(
+        {'comment_id': comment_id, 'bot': 'false'}).count()
+
+    result = jsonify({'bot_count': bot_count, 'not_count': not_count})
+    return result
