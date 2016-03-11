@@ -3,6 +3,7 @@ from datetime import datetime
 from manage import app
 from flask.views import request
 from flask import jsonify
+#from flask.ext.jsonpify import jsonify
 
 from sandwich_backend import comments, reactions
 
@@ -19,6 +20,11 @@ def upsert_comment():
     upvotes = request.args.get('upvotes')               # Goes in the comment
     downvotes = request.args.get('downvotes')           # Goes in the comment
     bot = request.args.get('bot')                       # Goes in the user reaction 
+
+    # meta
+    user_agent = request.headers['User-Agent']
+    language = request.headers['Accept-Language']
+    ip = request.remote_addr
 
     comments.update(
         {
@@ -48,7 +54,10 @@ def upsert_comment():
         {
             '$set': {
                 'bot': bot,
-                'time': datetime.now()
+                'time': datetime.now(),
+                'user_agent': user_agent,
+                'language': language,
+                'ip': ip
             }
         },
         upsert = True
@@ -56,9 +65,9 @@ def upsert_comment():
 
     bot_count = reactions.find(
         {'comment_id': comment_id, 'bot': 'true'}).count()
-
     not_count = reactions.find(
         {'comment_id': comment_id, 'bot': 'false'}).count()
+    json = {'bot_count': bot_count, 'not_count': not_count}
 
-    result = jsonify({'bot_count': bot_count, 'not_count': not_count})
+    result = jsonify(**json)
     return result
