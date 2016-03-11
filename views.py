@@ -24,7 +24,10 @@ def upsert_comment():
     # meta
     user_agent = request.headers['User-Agent']
     language = request.headers['Accept-Language']
-    ip = request.remote_addr
+    if request.headers.getlist("X-Forwarded-For"):
+        ip = request.headers.getlist("X-Forwarded-For")[0]
+    else:
+        ip = request.remote_addr
 
     comments.update(
         {
