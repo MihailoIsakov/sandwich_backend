@@ -2,9 +2,10 @@ from flask import Flask
 from pymongo import MongoClient
 
 client = MongoClient()
-db = client.blic
-comments = db.comments
-reactions = db.reactions
+
+# dbs
+blic = client.blic
+b92 = client.b92
 
 app = Flask(__name__)
 from sandwich_backend import views
